@@ -1,0 +1,36 @@
+.card-content-body{
+  height: 100%;
+  background: cornflowerblue;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+mat-card {
+  width: 600px;
+  margin: 2em auto;
+  text-align: center;
+  max-height: 600px;
+}
+
+.header{
+  text-align: center;
+
+}
+.full-width {
+  width: 80%;
+}
+
+.emailInput{
+  padding-top: 10px;
+}
+
+.submit-button {
+  padding: 20px;
+}
+
+.auth-failed {
+  margin: 3px;
+}
+

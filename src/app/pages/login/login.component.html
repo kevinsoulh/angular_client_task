@@ -1,0 +1,77 @@
+<div class="card-content-body">
+  <mat-card>
+    <mat-card-content>
+      <div class="header">
+        <H2>Welcome Back!</H2>
+      </div>
+      <form (submit)="signIn($event)" name="loginForm" [formGroup]="loginForm">
+        <div class="emailInput">
+          <mat-form-field class="full-width" appearance="outline">
+            <mat-label>Email</mat-label>
+            <input
+              [type]="'email'"
+              formControlName="email"
+              matInput
+              required
+            />
+            <mat-error *ngIf="!loginForm.controls['email'].valid">
+              Email is required
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="password-input">
+          <mat-form-field class="full-width" appearance="outline">
+            <mat-label>Password</mat-label>
+            <input formControlName="password" matInput [type]=" hide ? 'password' : 'text'" required />
+            <button  mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide Password'"
+                     [attr.aria-pressed]="hide">
+              <mat-icon>
+                {{hide ? 'visibility_off' : 'visibility'}}
+              </mat-icon>
+            </button>
+            <mat-error *ngIf="!loginForm.controls['password'].valid">
+              Password is required
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <button class="submit-button" type="submit" mat-flat-button color="primary">Login</button>
+      </form>
+      <div class="auth-failed" *ngIf="authFailed">
+        <label style="color: red">{{ authFailedMessage }}</label>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+
+
+<!--<div class="d-flex flex-column align-items-center justify-content-center" *ngIf="!signedIn else signedInAlready">
+  <div>Please Sign In to continue</div>
+  <form class="form w-50" [formGroup]="loginForm" (submit)="signIn($event)">
+    <div class="row m-3">
+      <label for="email">Email*</label>
+      <input class="col form-field" name="email" id="email" formControlName="email" />
+    </div>
+    <div class="row m-3">
+      <label for="password">Password*</label>
+      <input class="col form-field" type="password" name="password" id="password" formControlName="password" autocomplete="on" />
+    </div>
+    <div class="row m-3" *ngIf="authFailed">
+      <label style="color: red">Invalid credentials</label>
+    </div>
+    <div class="row m-3">
+      <button class="col btn btn-primary" [disabled]="!loginForm.valid" type="submit">Sign In</button>
+    </div>
+  </form>
+  <div class="alert-info p-2">
+    email: janedoe@gmail.com
+    password: test
+  </div>
+</div>-->
+<!--<ng-template #signedInAlready>
+  <h4>Sign In</h4>
+  <div>
+    You are already signed in!
+  </div>
+</ng-template>-->
