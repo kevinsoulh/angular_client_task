@@ -1,1 +1,94 @@
-<p>home works!</p>
+<app-header/>
+<mat-card class="custom_card">
+  <dx-data-grid
+    class="order-grid"
+    id="gridContainer"
+    [dataSource]="dataSource"
+    keyExpr="id"
+    [columnHidingEnabled]="true"
+    [showBorders]="true"
+    [showColumnLines]="true"
+    [showRowLines]="true"
+    [showColumnHeaders]="true"
+    [repaintChangesOnly]="true"
+    (onSaving)="onSavingHandler($event)"
+  >
+    <dxo-column-chooser [enabled]="false" mode="select"></dxo-column-chooser>
+
+    <dxo-editing
+      [allowAdding]="false"
+      [allowUpdating]="false"
+      [allowDeleting]="false"
+      [refreshMode]="'reshape'"
+      mode="popup"
+    >
+
+      <dxo-popup
+        title="Employee Info"
+        [showTitle]="true"
+        [width]="700"
+        [height]="525"
+      >
+      </dxo-popup>
+      <dxo-form>
+        <dxi-item itemType="group" [colCount]="2" [colSpan]="2">
+          <dxi-item dataField="vehicleVin"></dxi-item>
+          <dxi-item dataField="make" format="currency"></dxi-item>
+          <dxi-item dataField="model"></dxi-item>
+          <dxi-item dataField="year"></dxi-item>
+          <dxi-item dataField="mileage"></dxi-item>
+          <dxi-item dataField="registrationNumber"></dxi-item>
+          <dxi-item dataField="description"></dxi-item>
+          <dxi-item dataField="dateOfDiscovery" dataType="date"></dxi-item>
+        </dxi-item>
+
+      </dxo-form>
+    </dxo-editing>
+
+    <dxi-column dataField="vehicleVin" caption="VIN" alignment="left">
+      <dxi-validation-rule type="required"></dxi-validation-rule>
+    </dxi-column>
+    <dxi-column dataField="make" caption="Make">
+      <dxi-validation-rule type="required"></dxi-validation-rule>
+    </dxi-column>
+    <dxi-column dataField="model" caption="Model">
+      <dxi-validation-rule type="required"></dxi-validation-rule>
+    </dxi-column>
+    <dxi-column dataField="year" caption="Year">
+      <dxi-validation-rule type="required"></dxi-validation-rule>
+    </dxi-column>
+    <dxi-column dataField="mileage" caption="Mileage">
+      <dxi-validation-rule type="required"></dxi-validation-rule>
+    </dxi-column>
+    <dxi-column dataField="registrationNumber" caption="Registration Number" alignment="left">
+      <dxi-validation-rule type="required"></dxi-validation-rule>
+    </dxi-column>
+    <dxi-column dataField="description" caption="Description">
+      <dxi-validation-rule type="required"></dxi-validation-rule>
+    </dxi-column>
+    <dxi-column dataField="dateOfDiscovery" caption="Date of discovery">
+      <dxi-validation-rule type="required"></dxi-validation-rule>
+    </dxi-column>
+
+    <dxi-column type="buttons" cellTemplate="buttonColumnTemplate">
+      <!-- <dxi-button name="edit"></dxi-button>
+      <dxi-button name="delete"></dxi-button> -->
+    </dxi-column>
+
+    <div *dxTemplate="let data of 'buttonColumnTemplate'" >
+      <button mat-button color="primary" type="button">Edit</button>
+      <button mat-button color="primary" type="button" (click)="deleteClaim(data)">Delete</button>
+    </div>
+
+    <dxo-pager
+      [allowedPageSizes]="allowedPageSizes"
+      [showInfo]="showInfo"
+      [showNavigationButtons]="showNavButtons"
+      [showPageSizeSelector]="showPageSizeSelector"
+      [visible]="false"
+    >
+    </dxo-pager>
+
+    <dxo-paging [pageSize]="20" [enabled]="false"></dxo-paging>
+  </dx-data-grid>
+</mat-card>

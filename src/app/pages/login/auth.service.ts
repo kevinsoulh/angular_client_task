@@ -25,7 +25,7 @@ export class AuthService {
   }
 
   public user() {
-    return this.http.get<UserClaim[]>(`/api/auth/get-users`, {withCredentials: true});
+    return this.http.get<UserClaim[]>(`/api/auth/get-self-auth`, {withCredentials: true});
   }
 
   public isSignedIn(): Observable<boolean> {
