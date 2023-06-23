@@ -7,7 +7,7 @@ import {isSignedInGuard} from "./auth.guard";
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full'},
   { path: 'signin', component: LoginComponent },
-  { path: 'home', component: HomeComponent, canActivate: [isSignedInGuard] }
+  { path: 'home', component: HomeComponent, canActivate: [isSignedInGuard] },
 ];
 
 @NgModule({

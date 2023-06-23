@@ -39,7 +39,7 @@ export class LoginComponent implements OnInit {
       });
   }
 
-  public signIn(event: any) {
+  public signIn() {
     if (!this.loginForm.valid) {
       return;
     }

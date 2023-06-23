@@ -1,0 +1,115 @@
+<h1 class="form-title" mat-dialog-title>{{this.mode === 'create' ? 'New' : 'Edit' }} Claim</h1>
+<form class="form" mat-dialog-content [formGroup]="form">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-6 col-md-6 col-sm-12 d-flex">
+        <mat-form-field [appearance]="'fill'">
+          <mat-label>VIN</mat-label>
+          <input name="vehicleVin" formControlName="vehicleVin" matInput type="text" required [readonly]="form.value.status">
+          <mat-error *ngIf="!form.controls['vehicleVin'].valid">
+            Field required
+          </mat-error>
+        </mat-form-field>
+        <mat-icon class="question-mark" [matTooltip]="formHelp.vehicleVin" matTooltipPosition="above">help_outline</mat-icon>
+      </div>
+      <div class="col-lg-6 col-md-6 col-sm-12 d-flex">
+        <mat-form-field [appearance]="'fill'">
+          <mat-label>Registration Number</mat-label>
+          <input name="registrationNumber" formControlName="registrationNumber" required matInput type="text" [readonly]="form.value.status">
+          <mat-error *ngIf="!form.controls['registrationNumber'].valid">
+            Field required
+          </mat-error>
+        </mat-form-field>
+        <mat-icon class="question-mark" [matTooltip]="formHelp.registrationNumber" matTooltipPosition="above">help_outline</mat-icon>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-4 col-md-6 col-sm-12 d-flex">
+        <mat-form-field [appearance]="'fill'">
+          <mat-label>Make</mat-label>
+          <input name="make" formControlName="make" required matInput type="text" [readonly]="form.value.status">
+          <mat-error *ngIf="!form.controls['make'].valid">
+            Field required
+          </mat-error>
+        </mat-form-field>
+        <mat-icon class="question-mark" [matTooltip]="formHelp.make" matTooltipPosition="above">help_outline</mat-icon>
+      </div>
+      <div class="col-lg-4 col-md-6 col-sm-12 d-flex">
+        <mat-form-field [appearance]="'fill'">
+          <mat-label>Model</mat-label>
+          <input name="model" formControlName="model" required matInput type="text" [readonly]="form.value.status">
+          <mat-error *ngIf="!form.controls['model'].valid">
+            Field required
+          </mat-error>
+        </mat-form-field>
+        <mat-icon class="question-mark" [matTooltip]="formHelp.model" matTooltipPosition="above">help_outline</mat-icon>
+      </div>
+      <div class="col-lg-4 col-md-6 col-sm-12 d-flex">
+        <mat-form-field [appearance]="'fill'">
+          <mat-label>Mileage</mat-label>
+          <input name="mileage" formControlName="mileage" required matInput type="number" [readonly]="form.value.status">
+          <mat-error *ngIf="!form.controls['mileage'].valid">
+            Field required
+          </mat-error>
+        </mat-form-field>
+        <mat-icon class="question-mark" [matTooltip]="formHelp.mileage" matTooltipPosition="above">help_outline</mat-icon>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-6 col-md-6 col-sm-12 d-flex">
+        <mat-form-field [appearance]="'fill'">
+          <mat-label>Year</mat-label>
+          <input name="year" formControlName="year" required matInput type="number" [readonly]="form.value.status">
+          <mat-error *ngIf="!form.controls['year'].valid">
+            Field required
+          </mat-error>
+        </mat-form-field>
+        <mat-icon class="question-mark" [matTooltip]="formHelp.year" matTooltipPosition="above">help_outline</mat-icon>
+      </div>
+      <div class="col-lg-6 col-md-6 col-sm-12 d-flex">
+        <mat-form-field [appearance]="'fill'">
+          <mat-label>Date of discovery</mat-label>
+          <input name="dateOfDiscovery" formControlName="dateOfDiscovery" required matInput [matDatepicker]="picker" [readonly]="form.value.status">
+          <mat-error *ngIf="!form.controls['dateOfDiscovery'].valid">
+            Field required
+          </mat-error>
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+        <mat-icon class="question-mark" [matTooltip]="formHelp.dateOfDiscovery" matTooltipPosition="above">help_outline</mat-icon>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12 d-flex">
+        <mat-form-field [appearance]="'fill'">
+          <mat-label>Description</mat-label>
+          <textarea name="description" formControlName="description" required matInput type="text" [readonly]="form.value.status"></textarea>
+          <mat-error *ngIf="!form.controls['description'].valid">
+            Field required
+          </mat-error>
+        </mat-form-field>
+        <mat-icon class="question-mark" [matTooltip]="formHelp.description" matTooltipPosition="above">help_outline</mat-icon>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12 d-flex align-items-start">
+        <div class="d-flex flex-column justify-content-start mb-3">
+          <mat-label>Status</mat-label>
+          <mat-button-toggle-group name="status" aria-label="Status">
+            <mat-button-toggle value="false" [checked]="form.value.status === false" disabled="true">Open</mat-button-toggle>
+            <mat-button-toggle value="true" [checked]="form.value.status === true" disabled="true">Closed</mat-button-toggle>
+          </mat-button-toggle-group>
+        </div>
+        <mat-icon class="question-mark" [matTooltip]="formHelp.status" matTooltipPosition="above">help_outline</mat-icon>
+      </div>
+    </div>
+  </div>
+</form>
+<div class="footer-buttons" mat-dialog-actions>
+  <button type="button" mat-button mat-dialog-close>Cancel</button>
+  <button type="button" mat-button color="primary" (click)="submitForm()">Save</button>
+</div>

@@ -1,11 +1,21 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef, ViewChild, HostListener } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { MatDialog } from '@angular/material/dialog';
 import { HomeService } from "./home.service";
+import { AuthService } from '../login/auth.service';
+import { Observable, lastValueFrom } from "rxjs";
+import { ClaimCreatorComponent, ClaimCreatorOutput } from './claim-creator/claim-creator.component';
+import { ConfirmationDialogComponent, ConfirmationOutput} from "./confirmation-dialog/confirmation-dialog.component";
+import { DxDataGridComponent } from 'devextreme-angular';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss']
+  styleUrls: ['./home.component.scss'],
+  providers: [DatePipe]
 })
+
 export class HomeComponent {
   id?: string;
   key?: string;
@@ -13,57 +23,158 @@ export class HomeComponent {
   vehicleVin?: number;
   make?: string;
   model?: string;
-  year?: string;
+  year?: number;
   mileage?: string;
   registrationNumber?: number;
   description?: string;
   dateOfDiscovery?: string;
 
-  readonly allowedPageSizes = [5, 10, 20, 30, 40, 50, 'all'];
+  @ViewChild(DxDataGridComponent) dataGrid?: DxDataGridComponent;
 
-  readonly displayModes = [{ text: "Display Mode 'full'", value: 'full' }, { text: "Display Mode 'compact'", value: 'compact' }];
+  loaded = false;
 
-  displayMode: string = 'full';
+  dataSource: any[] = [];
 
-  showPageSizeSelector: boolean = true;
+  userName: Observable<string>;
 
-  showInfo: boolean = true;
-
-  showNavButtons: boolean = true;
-
-  dataSource: any = [];
-
-  constructor(private homeService: HomeService) {
+  constructor(private homeService: HomeService, private authService: AuthService, private dialog: MatDialog, private cdr: ChangeDetectorRef, private datePipe: DatePipe, private snackBar: MatSnackBar) {
     this.loadClaims();
+    this.userName = this.authService.userName();
   }
 
-  public loadClaims() {
-    this.homeService.getClaims().subscribe(
-      response => {
-        this.dataSource = response;
+  onSearchInputChanged(searchInput: any) {
+    this.dataGrid?.instance.searchByText(searchInput.target.value);
+  }
+
+  public async loadClaims() {
+    this.loaded = false;
+
+    const response = await lastValueFrom(this.homeService.getClaims());
+
+    this.dataSource = response;
+
+    //comment this code below or set it to false to edit the loader
+    this.loaded = true;
+    this.cdr.detectChanges();
+  }
+
+  public async addNewClaim() {
+
+    // show the form
+    const formResult: ClaimCreatorOutput | undefined = await lastValueFrom(this.dialog.open(ClaimCreatorComponent).afterClosed());
+    // take the return value from the form and submit the claim
+
+    if(formResult?.type !== 'submit')
+      return;
+
+    const confirmationResult: ConfirmationOutput | undefined = await lastValueFrom(this.dialog.open(ConfirmationDialogComponent, {
+      data: "Are you sure you want to submit this claim?"
+    }).afterClosed());
+
+    if(!confirmationResult?.data) return
+
+    try {
+      const result: any = await lastValueFrom(this.homeService.storeClaim(formResult.data));
+
+      if(result?.message) {
+        this.snackBar.open(result?.message, 'Close', {
+          verticalPosition: 'top',
+          horizontalPosition: 'center',
+        });
       }
-    )
-  }
 
-  public deleteClaim(data: any) {
-    this.homeService.deleteClaim(encodeURIComponent(data.data.id)).subscribe(
-      response => {
-        this.loadClaims();
+      // SUCCESS
+      await this.loadClaims();
+    } catch(error: any) {
+      // ERROR
+
+      if(error?.message) {
+        this.snackBar.open(error?.message, 'Close', {
+          verticalPosition: 'top',
+          horizontalPosition: 'center',
+        })
       }
-    )
+    }
   }
 
-  customizeColumns(columns: { width: number; }[]) {
-    columns[0].width = 100;
+  public async deleteClaim(event: any, data: any) {
+    const confirmationResult: ConfirmationOutput | undefined = await lastValueFrom(this.dialog.open(ConfirmationDialogComponent, {
+      data: "Are you sure you want to delete this claim?"
+    }).afterClosed());
+
+    if(!confirmationResult?.data) return
+
+    try {
+      const result: any = await lastValueFrom(this.homeService.deleteClaim(encodeURIComponent(data.data.id)));
+
+      if(result?.message) {
+        this.snackBar.open(result?.message, 'Close', {
+          verticalPosition: 'top',
+          horizontalPosition: 'center',
+        });
+      }
+
+      await this.loadClaims();
+    } catch(error: any) {
+      if(error?.message) {
+        this.snackBar.open(error?.message, 'Close', {
+          verticalPosition: 'top',
+          horizontalPosition: 'center',
+        });
+      }
+    }
   }
 
-  get isCompactMode() {
-    return this.displayMode === 'compact';
+  public async editClaim(data: any) {
+    const claim = data.data;
+
+    // show the form
+    const formResult: ClaimCreatorOutput | undefined = await lastValueFrom(this.dialog.open(ClaimCreatorComponent, {
+      data: claim
+    }).afterClosed());
+    // take the return value from the form and update the claim
+
+    if(formResult?.type !== 'submit')
+      return;
+
+    const confirmationResult: ConfirmationOutput | undefined = await lastValueFrom(this.dialog.open(ConfirmationDialogComponent, {
+      data: "Are you sure you want to save your changes?"
+    }).afterClosed());
+
+    if(!confirmationResult?.data) return
+
+    try {
+      const result: any = await lastValueFrom(this.homeService.updateClaim(formResult.data));
+
+      if(result?.message) {
+        this.snackBar.open(result?.message, 'Close', {
+          verticalPosition: 'top',
+          horizontalPosition: 'center',
+        });
+      }
+
+      // SUCCESS
+      await this.loadClaims();
+    } catch(error: any) {
+      // ERROR
+      // TODO: show error message
+      console.log(error);
+
+      if(error?.message) {
+        this.snackBar.open(error?.message, 'Close', {
+          verticalPosition: 'top',
+          horizontalPosition: 'center',
+        });
+      }
+    }
   }
 
-  onSavingHandler(e: any) {
-    const data = e.changes[0].data;
+  public formatDate(date: string): string {
+    return this.datePipe.transform(date, 'dd/MM/yyyy')!;
+  }
 
-    console.log(data)
+  @HostListener('window:resize')
+  onWindowResize() {
+    this.dataGrid?.instance.repaint();
   }
 }

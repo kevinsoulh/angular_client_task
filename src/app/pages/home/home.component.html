@@ -1,94 +1,136 @@
 <app-header/>
 <mat-card class="custom_card">
-  <dx-data-grid
-    class="order-grid"
-    id="gridContainer"
-    [dataSource]="dataSource"
-    keyExpr="id"
-    [columnHidingEnabled]="true"
-    [showBorders]="true"
-    [showColumnLines]="true"
-    [showRowLines]="true"
-    [showColumnHeaders]="true"
-    [repaintChangesOnly]="true"
-    (onSaving)="onSavingHandler($event)"
-  >
-    <dxo-column-chooser [enabled]="false" mode="select"></dxo-column-chooser>
 
-    <dxo-editing
-      [allowAdding]="false"
-      [allowUpdating]="false"
-      [allowDeleting]="false"
-      [refreshMode]="'reshape'"
-      mode="popup"
-    >
+  <ng-container *ngIf="loaded; else loadingTmpl">
+    <div mat-card-title>Welcome</div>
+    <div mat-card-subtitle>{{userName | async}}</div>
 
-      <dxo-popup
-        title="Employee Info"
-        [showTitle]="true"
-        [width]="700"
-        [height]="525"
-      >
-      </dxo-popup>
-      <dxo-form>
-        <dxi-item itemType="group" [colCount]="2" [colSpan]="2">
-          <dxi-item dataField="vehicleVin"></dxi-item>
-          <dxi-item dataField="make" format="currency"></dxi-item>
-          <dxi-item dataField="model"></dxi-item>
-          <dxi-item dataField="year"></dxi-item>
-          <dxi-item dataField="mileage"></dxi-item>
-          <dxi-item dataField="registrationNumber"></dxi-item>
-          <dxi-item dataField="description"></dxi-item>
-          <dxi-item dataField="dateOfDiscovery" dataType="date"></dxi-item>
-        </dxi-item>
+    <div class="toolbar-container">
+      <mat-form-field [appearance]="'fill'" subscriptSizing="dynamic">
+        <mat-label>Search</mat-label>
+        <input matInput type="text" (keyup)="onSearchInputChanged($event)">
+      </mat-form-field>
 
-      </dxo-form>
-    </dxo-editing>
-
-    <dxi-column dataField="vehicleVin" caption="VIN" alignment="left">
-      <dxi-validation-rule type="required"></dxi-validation-rule>
-    </dxi-column>
-    <dxi-column dataField="make" caption="Make">
-      <dxi-validation-rule type="required"></dxi-validation-rule>
-    </dxi-column>
-    <dxi-column dataField="model" caption="Model">
-      <dxi-validation-rule type="required"></dxi-validation-rule>
-    </dxi-column>
-    <dxi-column dataField="year" caption="Year">
-      <dxi-validation-rule type="required"></dxi-validation-rule>
-    </dxi-column>
-    <dxi-column dataField="mileage" caption="Mileage">
-      <dxi-validation-rule type="required"></dxi-validation-rule>
-    </dxi-column>
-    <dxi-column dataField="registrationNumber" caption="Registration Number" alignment="left">
-      <dxi-validation-rule type="required"></dxi-validation-rule>
-    </dxi-column>
-    <dxi-column dataField="description" caption="Description">
-      <dxi-validation-rule type="required"></dxi-validation-rule>
-    </dxi-column>
-    <dxi-column dataField="dateOfDiscovery" caption="Date of discovery">
-      <dxi-validation-rule type="required"></dxi-validation-rule>
-    </dxi-column>
-
-    <dxi-column type="buttons" cellTemplate="buttonColumnTemplate">
-      <!-- <dxi-button name="edit"></dxi-button>
-      <dxi-button name="delete"></dxi-button> -->
-    </dxi-column>
-
-    <div *dxTemplate="let data of 'buttonColumnTemplate'" >
-      <button mat-button color="primary" type="button">Edit</button>
-      <button mat-button color="primary" type="button" (click)="deleteClaim(data)">Delete</button>
+      <button mat-fab color="primary" type="button" matTooltip="Add Claim" matTooltipPosition="above" (click)="addNewClaim()"><mat-icon>add</mat-icon></button>
     </div>
 
-    <dxo-pager
-      [allowedPageSizes]="allowedPageSizes"
-      [showInfo]="showInfo"
-      [showNavigationButtons]="showNavButtons"
-      [showPageSizeSelector]="showPageSizeSelector"
-      [visible]="false"
-    >
-    </dxo-pager>
+    <div class="claim-grid-wrapper">
+      <dx-data-grid
+        *ngIf="loaded; else loadingTmpl"
+        class="claim-grid"
+        id="gridContainer"
+        [dataSource]="dataSource"
+        keyExpr="id"
+        [height]="'100%'"
+        [remoteOperations]="false"
+        [columnHidingEnabled]="true"
+        [showBorders]="true"
+        [showColumnLines]="true"
+        [showRowLines]="true"
+        [showColumnHeaders]="true"
+        [repaintChangesOnly]="true"
+      >
+        <dxo-header-filter
+          [visible]="true"
+          [dataSource]="dataSource"
+        ></dxo-header-filter>
 
-    <dxo-paging [pageSize]="20" [enabled]="false"></dxo-paging>
-  </dx-data-grid>
+        <dxo-scrolling [mode]="'virtual'"></dxo-scrolling>
+
+        <dxo-editing
+          [allowAdding]="false"
+          [allowUpdating]="false"
+          [allowDeleting]="false"
+          [refreshMode]="'reshape'"
+          mode="popup"
+        >
+
+          <dxo-popup
+            title="Employee Info"
+            [showTitle]="true"
+            [width]="700"
+            [height]="525"
+          >
+          </dxo-popup>
+
+          <dxo-form>
+            <dxi-item itemType="group" [colCount]="2" [colSpan]="2">
+              <dxi-item dataField="vehicleVin"></dxi-item>
+              <dxi-item dataField="registrationNumber"></dxi-item>
+              <dxi-item dataField="make" format="currency"></dxi-item>
+              <dxi-item dataField="model"></dxi-item>
+              <dxi-item dataField="mileage"></dxi-item>
+              <dxi-item dataField="year"></dxi-item>
+              <dxi-item dataField="dateOfDiscovery" dataType="date"></dxi-item>
+              <dxi-item dataField="description"></dxi-item>
+            </dxi-item>
+
+          </dxo-form>
+        </dxo-editing>
+
+        <dxi-column dataField="vehicleVin" caption="VIN" alignment="left" cellTemplate="emptyTextReplacementTmpl">
+          <dxi-validation-rule type="required"></dxi-validation-rule>
+        </dxi-column>
+        <dxi-column dataField="registrationNumber" caption="Registration Number" alignment="left" cellTemplate="regNumTmpl">
+          <dxi-validation-rule type="required"></dxi-validation-rule>
+        </dxi-column>
+        <dxi-column dataField="make" caption="Make" cellTemplate="emptyTextReplacementTmpl">
+          <dxi-validation-rule type="required"></dxi-validation-rule>
+        </dxi-column>
+        <dxi-column dataField="model" caption="Model" cellTemplate="emptyTextReplacementTmpl">
+          <dxi-validation-rule type="required"></dxi-validation-rule>
+        </dxi-column>
+        <dxi-column dataField="mileage" caption="Mileage" alignment="left" cellTemplate="mileTmpl">
+          <dxi-validation-rule type="required"></dxi-validation-rule>
+        </dxi-column>
+        <dxi-column dataField="year" caption="Year" alignment="left"cellTemplate="emptyTextReplacementTmpl">
+          <dxi-validation-rule type="required"></dxi-validation-rule>
+        </dxi-column>
+        <dxi-column dataField="dateOfDiscovery" caption="Date of discovery" cellTemplate="dateTmpl">
+          <dxi-validation-rule type="required"></dxi-validation-rule>
+        </dxi-column>
+        <dxi-column dataField="status" caption="Status" alignment="left" cellTemplate="statusTmpl">
+          <dxi-validation-rule type="required"></dxi-validation-rule>
+        </dxi-column>
+        <dxi-column dataField="description" caption="Description" cellTemplate="emptyTextReplacementTmpl">
+          <dxi-validation-rule type="required"></dxi-validation-rule>
+        </dxi-column>
+        <dxi-column type="buttons" cellTemplate="buttonColumnTemplate"></dxi-column>
+
+        <div class="cell-button-container" *dxTemplate="let data of 'buttonColumnTemplate'" >
+          <button mat-button color="primary" type="button" matTooltip="Edit Claim" matTooltipPosition="above" (click)="editClaim(data)"><mat-icon class="center-icon">edit</mat-icon></button>
+          <button mat-button color="primary" type="button" matTooltip="Delete Claim" matTooltipPosition="above" (click)="deleteClaim($event, data)"><mat-icon class="center-icon">delete</mat-icon></button>
+        </div>
+
+        <div *dxTemplate="let cell of 'emptyTextReplacementTmpl'">
+          {{ (cell.value !== null && cell.value !== undefined && cell.value !== '' ? cell.text : 'Not filled in') }}
+        </div>
+
+        <div *dxTemplate="let cell of 'dateTmpl'">
+          {{ (cell.value !== null && cell.value !== undefined && cell.value !== '' ? (cell.value | date:'dd.MM.yyyy') : 'Not filled in' ) }}
+        </div>
+
+        <div *dxTemplate="let cell of 'mileTmpl'">
+          {{ (cell.value !== null && cell.value !== undefined && cell.value !== '' ? (cell.value | formatMiles) : 'Not filled in' ) }}
+        </div>
+
+        <div *dxTemplate="let cell of 'regNumTmpl'">
+          {{ (cell.value !== null && cell.value !== undefined && cell.value !== '' ? (cell.value | formatRegNum) : 'Not filled in' ) }}
+        </div>
+
+        <div *dxTemplate="let cell of 'statusTmpl'">
+          {{ (cell.value !== null && cell.value !== undefined && cell.value !== '' ? (cell.value === true ? "Closed" : "Open") : 'Not filled in' ) }}
+        </div>
+
+      </dx-data-grid>
+    </div>
+  </ng-container>
+
 </mat-card>
+
+
+<ng-template #loadingTmpl>
+  <div class="loader">
+    <mat-spinner></mat-spinner>
+  </div>
+</ng-template>

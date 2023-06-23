@@ -1,0 +1,25 @@
+.form-title {
+    text-align: center;
+}
+
+.form {
+    padding: 1rem;
+    max-width: fit-content;
+
+    mat-form-field {
+        width: 100%;
+    }
+
+    .question-mark {
+        margin-left: 0.2rem;
+        font-size: 0.8rem;
+    }
+}
+
+.footer-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-top: 1rem;
+}

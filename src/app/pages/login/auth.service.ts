@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {BASE_URL, UserClaim, Response} from "./app.interfaces";
-import {catchError, map, Observable, of} from "rxjs";
+import {catchError, filter, flatMap, lastValueFrom, map, mergeMap, Observable, of} from "rxjs";
 import {HttpClient} from "@angular/common/http";
 
 @Injectable({
@@ -20,11 +20,11 @@ export class AuthService {
       });
   }
 
-  public signOut() {
-    return this.http.get(`/api/auth/logout`);
+  public async signOut() {
+    return lastValueFrom(this.http.get(`/api/auth/logout`, {withCredentials: true}));
   }
 
-  public user() {
+  public user(): Observable<UserClaim[]> {
     return this.http.get<UserClaim[]>(`/api/auth/get-self-auth`, {withCredentials: true});
   }
 
@@ -35,6 +35,17 @@ export class AuthService {
       }),
       catchError((error) => {
         return of(false);
+      }));
+  }
+
+  public userName(): Observable<string> {
+    return this.user().pipe(
+      mergeMap(userClaims => userClaims),
+      filter(userClaim => userClaim.type.endsWith('/name')),
+      map(nameClaim => nameClaim.value),
+      
+      catchError((error) => {
+        return of('');
       }));
   }
 }

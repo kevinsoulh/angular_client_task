@@ -4,11 +4,12 @@
       <div class="header">
         <H2>Welcome Back!</H2>
       </div>
-      <form (submit)="signIn($event)" name="loginForm" [formGroup]="loginForm">
+      <form (submit)="signIn()" name="loginForm" [formGroup]="loginForm">
         <div class="emailInput">
-          <mat-form-field class="full-width" appearance="outline">
+          <mat-form-field class="full-width" appearance="fill">
             <mat-label>Email</mat-label>
             <input
+              (keydown.enter)="signIn(); $event.preventDefault();"
               [type]="'email'"
               formControlName="email"
               matInput
@@ -21,10 +22,10 @@
         </div>
 
         <div class="password-input">
-          <mat-form-field class="full-width" appearance="outline">
+          <mat-form-field class="full-width" appearance="fill">
             <mat-label>Password</mat-label>
-            <input formControlName="password" matInput [type]=" hide ? 'password' : 'text'" required />
-            <button  mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide Password'"
+            <input formControlName="password" matInput [type]=" hide ? 'password' : 'text'" required (keydown.enter)="signIn(); $event.preventDefault();" />
+            <button  mat-icon-button matSuffix (click)="hide = !hide; $event.preventDefault();" [attr.aria-label]="'Hide Password'"
                      [attr.aria-pressed]="hide">
               <mat-icon>
                 {{hide ? 'visibility_off' : 'visibility'}}
